@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Data</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}" />
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+  <div class="container mt-4">
+    <div class="d-flex align-items-center justify-content-start">
+    <img src="{{ url_for('static', filename='logo.png') }}" width="64" height="64" />
+    <h2>Ada-Fruit Sensor Data</h2>
+  </div>
+    <div class="d-flex w-100 justify-content-end">
+    <select onchange="changeLimit()" id="limit" class="mb-4 mt-4">
+      <option id="limit-50" value="50">Show Last 50</option>
+      <option id="limit-200" value="200">Show Last 200</option>
+      <option id="limit-all" value="all">Show All</option>
+    </select>
+  </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Date/Time</th>
+          <th scope="col">CO<sub>2</sub> (ppm)</th>
+          <th scope="col">Temperature (<sup>o</sup>C)</th>
+          <th scope="col">Relative Humidity (%RH)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in data %}
+        <tr>
+          <th scope="row">{{ item.id }}</th>
+          <td>{{ item.datetime }}</td>
+          <td>{{ '{0:.4f}'.format(item.co2) }} ppm</td>
+          <td>{{ '{0:.4f}'.format(item.temperature) }} <sup>o</sup>C</td>
+          <td>{{ '{0:.4f}'.format(item.humidity) }} %RH</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script defer>
+    window.addEventListener('DOMContentLoaded', () => {
+      const limit = document.getElementById('limit');
+      const url = new URL(window.location.href);
+      [...limit.getElementsByTagName('option')].forEach(element => {
+        element.selected = element.id === 'limit-' + url.searchParams.get('limit') ? 'selected' : false
+      });
+    })
+
+    function changeLimit() {
+      const url = new URL(window.location.href);
+      const limit = document.getElementById('limit');
+      url.searchParams.delete('limit');
+      url.searchParams.append('limit', limit.value);
+      window.location.href = url.href;
+    }
+  </script>
+</body>
+
+</html>
